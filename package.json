@@ -2,7 +2,7 @@
   "name": "@andersgee/webgl2-utils",
   "author": "andersgee",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
