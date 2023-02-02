@@ -2,6 +2,14 @@
 
 utility functions for working with webgl2
 
+
+## install
+with your package manager of choice
+```sh
+#npm install @andersgee/webgl2-utils
+pnpm add @andersgee/webgl2-utils
+```
+
 ## example usage
 
 view this [example live here](https://webgl2-utils-example.vercel.app/)
