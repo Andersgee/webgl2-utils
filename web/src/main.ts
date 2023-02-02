@@ -1,16 +1,6 @@
-# webgl2-utils
-
-utility functions for working with webgl2
-
-## example usage
-
-view this [example live here](https://github.com/Andersgee/webgl2-utils)
-
-```ts
 import * as webgl from "@andersgee/webgl2-utils";
 
 // a string containing both vertex and fragment shader
-// this would be in a .glsl file but inlined here for this example
 const glsl = `#version 300 es
 precision mediump float;
 
@@ -50,37 +40,55 @@ const layout: webgl.ProgramLayout = {
   ]),
 };
 
-// create some model data, to be used as vertex array object
+//initialize
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const gl = webgl.createWebgl2Context(canvas);
+const shader = webgl.createProgram(gl, layout, glsl);
+
 const model: webgl.Model = {
   index: [0, 1, 2, 2, 3, 0],
   position: [-1, -1, 1, -1, 1, 1, -1, 1],
   uv: [0, 0, 1, 0, 1, 1, 0, 1],
 };
 
-// and some default uniform values
 const uniforms = {
   color1: [1, 0, 0],
   color2: [0, 1, 0],
 };
 
-//initialize everything
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const gl = webgl.createWebgl2Context(canvas);
-const shader = webgl.createProgram(gl, layout, glsl);
 const vao = webgl.createVao(gl, shader.programAttributes, model);
 
-//and draw
-function render(elapsed_ms: number, elapsed_ms_since_last_render: number) {
-  webgl.setProgram(gl, shader.program);
+//draw
+webgl.setProgram(gl, shader.program);
 
-  //change colors a bit
-  uniforms.color1[0] = 0.5 + 0.5 * Math.sin(elapsed_ms / 1000);
-  uniforms.color2[2] = 0.5 + 0.5 * Math.cos(elapsed_ms / 1000);
-
+function render(timestamp: number, _elapsed_ms_since_last_render: number) {
+  uniforms.color1[0] = 0.5 + 0.5 * Math.sin(timestamp / 1000);
+  uniforms.color2[2] = 0.5 + 0.5 * Math.cos(timestamp / 1000);
   webgl.setUniforms(gl, shader.programUniforms, uniforms);
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
   webgl.draw(gl, vao);
 }
 
-webgl.startRequestAnimationFrameLoop(render);
-```
+startRequestAnimationFrameLoop(render);
+
+function startRequestAnimationFrameLoop(
+  render: (timestamp: number, elapsed_ms_since_last_render: number) => void
+) {
+  let prevTimestamp: number | undefined = undefined;
+  let elapsed_ms_since_last_render = 0;
+
+  const renderloop = (timestamp: number) => {
+    if (!prevTimestamp) {
+      prevTimestamp = timestamp;
+    }
+
+    elapsed_ms_since_last_render = timestamp - prevTimestamp;
+    if (prevTimestamp !== timestamp) {
+      render(timestamp, elapsed_ms_since_last_render);
+    }
+    prevTimestamp = timestamp;
+    window.requestAnimationFrame(renderloop);
+  };
+
+  window.requestAnimationFrame(renderloop);
+}
