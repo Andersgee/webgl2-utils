@@ -1,5 +1,11 @@
 # @andersgee/webgl2-utils
 
+## 0.1.0
+
+### Minor Changes
+
+- d48c8a4: first release
+
 ## 0.0.4
 
 ### Patch Changes
